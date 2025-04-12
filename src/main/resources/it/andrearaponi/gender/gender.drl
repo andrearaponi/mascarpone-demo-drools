@@ -1,0 +1,31 @@
+package it.andrearaponi.gender
+import org.jboss.logging.Logger;
+import it.andrearaponi.gender.dto.GenderClassificationResponse
+
+/**
+ * Rule for inappropriate content
+ */
+rule "Handle Inappropriate Content"
+    dialect "java"
+when
+    $r: GenderClassificationResponse(gender == "X")
+then
+    Logger log = Logger.getLogger("Drools");
+    log.warn("POLICY VIOLATION: Content policy violation detected: " + $r.getDescription());
+    $r.setValidated(false);
+end
+
+/**
+ * Rule for appropriate content
+ */
+rule "Handle Appropriate Content"
+    dialect "java"
+when
+    $r: GenderClassificationResponse(gender == "M" || gender == "F" || gender == "N")
+then
+    Logger log = Logger.getLogger("Drools");
+    log.info("VALID CONTENT: Gender is " + $r.getGender());
+    $r.setValidated(true);
+end
+
+
